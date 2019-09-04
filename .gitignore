@@ -1,0 +1,5 @@
+# Ignore CImg
+CImg*/
+
+# Ignore vscode
+*vscode*
