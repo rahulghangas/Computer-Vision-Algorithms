@@ -53,33 +53,32 @@ void blend_and_show(cimg::CImg<unsigned char> &img1, cimg::CImg<unsigned char> &
     auto start_time = std::chrono::steady_clock::now();
 
     float alpha;
-    for (int i = 1; i <= PARTS_PER_SEC * time; i++)
-    {
-        // Iteratively increasing end_time to simulate frame-rate
-        auto end_time = start_time + frame_duration(i);
 
-        // Cross-dissolve parameter
-        alpha = (float)i / (PARTS_PER_SEC * time);
+    while (true){
+        for (int i = 1; i <= PARTS_PER_SEC * time; i++){
+            // Iteratively increasing end_time to simulate frame-rate
+            auto end_time = start_time + frame_duration(i);
 
-        // Single iteration of linear blend operator
-        for (int x = 0; x < blend.width(); x++){
-            for (int y = 0; y < blend.height(); y++){
-                for (int c = 0; c < 3; c++){   
-                    blend(x,y,c) = ((1-alpha) * img1(x,y,c)) + (alpha * img2(x,y,c));
-                }
-                
+            // Cross-dissolve parameter
+            alpha = (float)i / (PARTS_PER_SEC * time);
+
+            // CImg macro for for-loops
+            cimg_forXYC(blend,x,y,c) {blend(x,y,c) = ((1-alpha) * img1(x,y,c)) + (alpha * img2(x,y,c));}
+            
+            // Sleep until next frame
+            std::this_thread::sleep_until(end_time);
+
+            // Convert image "blend" to the internal display buffer
+            display.render(blend);
+            // Paint internal display buffer on associated window
+            display.paint();
+
+            if(display.is_closed()){
+                goto exit;
             }
-        
         }
-        
-        // Sleep until next frame
-        std::this_thread::sleep_until(end_time);
 
-        // Convert image "blend" to the internal display buffer
-        display.render(blend);
-        // Paint internal display buffer on associated window
-        display.paint();
     }
-    
-    display.wait();
+
+    exit:;
 }
