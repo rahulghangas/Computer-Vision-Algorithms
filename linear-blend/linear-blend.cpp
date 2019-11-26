@@ -53,14 +53,20 @@ void blend_and_show(cimg::CImg<unsigned char> &img1, cimg::CImg<unsigned char> &
     auto start_time = std::chrono::steady_clock::now();
 
     float alpha;
+    bool blend_direction = true;
 
     while (true){
+
         for (int i = 1; i <= PARTS_PER_SEC * time; i++){
             // Iteratively increasing end_time to simulate frame-rate
             auto end_time = start_time + frame_duration(i);
 
             // Cross-dissolve parameter
-            alpha = (float)i / (PARTS_PER_SEC * time);
+            if (blend_direction){
+                alpha = (float)i / (PARTS_PER_SEC * time);
+            }else{
+                alpha = 1.0 - (float)i / (PARTS_PER_SEC * time);
+            }
 
             // CImg macro for for-loops
             cimg_forXYC(blend,x,y,c) {blend(x,y,c) = ((1-alpha) * img1(x,y,c)) + (alpha * img2(x,y,c));}
@@ -76,7 +82,10 @@ void blend_and_show(cimg::CImg<unsigned char> &img1, cimg::CImg<unsigned char> &
             if(display.is_closed()){
                 goto exit;
             }
+
         }
+
+        blend_direction = !blend_direction;
 
     }
 
