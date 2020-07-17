@@ -1,6 +1,6 @@
 COMP = g++
 FILENAME = linear-blend.cpp
-FLAGS = -lpthread -lX11 -std=c++11 -L/usr/X11/lib -I/usr/X11/include
+FLAGS = -lpthread -lX11 -std=c++11 -L/opt/X11/lib -I/opt/X11/include
 ADD-FLAGS = 
 OUTPUT = linear-blend
 INCLUDE = -I ../CImg
